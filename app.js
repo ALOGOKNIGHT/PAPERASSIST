@@ -90,6 +90,7 @@ function setAuthMessage(message, state = 'info') {
 }
 
 let currentUser = null;
+let authSessionResolved = false;
 
 function renderSignedInUser(user) {
   currentUser = user;
@@ -109,6 +110,9 @@ function navigateView() {
   const appRoutes = ['studio', 'bank', 'drafts', 'coaching', 'school'];
   const inApp = appRoutes.includes(route);
   if (inApp && !currentUser) {
+    // Do not erase a deep link while Supabase is still restoring the saved
+    // session. This is especially visible on slower mobile connections.
+    if (supabaseClient && !authSessionResolved) return;
     location.hash = 'home';
     showAuth('login');
     return;
@@ -265,15 +269,18 @@ document.querySelector('#logout-button')?.addEventListener('click', async () => 
 });
 if (supabaseClient) {
   supabaseClient.auth.getSession().then(({ data, error }) => {
+    authSessionResolved = true;
     if (error) setAuthMessage(error.message, 'error');
     renderSignedInUser(data?.session?.user || null);
     navigateView();
   });
   supabaseClient.auth.onAuthStateChange((_event, session) => {
+    authSessionResolved = true;
     renderSignedInUser(session?.user || null);
     navigateView();
   });
 } else {
+  authSessionResolved = true;
   renderSignedInUser(null);
 }
 

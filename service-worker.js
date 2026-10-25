@@ -1,6 +1,6 @@
 const CACHE_PREFIX = 'papercraft-';
-const SHELL_CACHE = `${CACHE_PREFIX}shell-v1`;
-const RUNTIME_CACHE = `${CACHE_PREFIX}runtime-v1`;
+const SHELL_CACHE = `${CACHE_PREFIX}shell-v2`;
+const RUNTIME_CACHE = `${CACHE_PREFIX}runtime-v2`;
 const APP_SHELL = [
   '/',
   '/index.html',
@@ -41,11 +41,25 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  event.respondWith(caches.match(request).then(cached => {
-    const update = fetch(request).then(response => {
+  const isAppAsset = /\.(?:js|css|webmanifest|png)$/i.test(url.pathname);
+  if (isAppAsset) {
+    event.respondWith(fetch(request, { cache: 'no-cache' }).then(response => {
       if (response.ok) caches.open(RUNTIME_CACHE).then(cache => cache.put(request, response.clone()));
       return response;
+    }).catch(() => caches.match(request)));
+    return;
+  }
+
+  event.respondWith(caches.open(RUNTIME_CACHE).then(async cache => {
+    const cached = await cache.match(request);
+    const update = fetch(request).then(response => {
+      if (response.ok) cache.put(request, response.clone());
+      return response;
     });
-    return cached || update;
+    if (cached) {
+      event.waitUntil(update.catch(() => undefined));
+      return cached;
+    }
+    return update;
   }));
 });
