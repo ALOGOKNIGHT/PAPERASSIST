@@ -175,8 +175,9 @@ Draw neat diagrams wherever necessary.</textarea></label><button type="button" i
         </label>
       </div>
 
-      <label class="field"><span>Question prompt / text</span>
-        <div id="custom-q-text" class="math-rich-editor question-rich-editor" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="Type or paste the full question here..." data-required="true"></div>
+      <div class="field">
+        <span id="custom-q-text-label">Question prompt / text</span>
+        <div id="custom-q-text" class="math-rich-editor question-rich-editor" contenteditable="true" role="textbox" aria-labelledby="custom-q-text-label" aria-multiline="true" data-placeholder="Type or paste the full question here..." data-required="true"></div>
         <div class="question-image-controls">
           <button type="button" class="secondary-button" id="add-custom-question-image">＋ Add image to question</button>
           <button type="button" class="secondary-button hidden" id="remove-custom-question-image">Remove image</button>
@@ -184,7 +185,7 @@ Draw neat diagrams wherever necessary.</textarea></label><button type="button" i
           <small id="custom-question-image-status" aria-live="polite">The image will appear below the question and before its answer choices.</small>
         </div>
         <small class="math-editor-hint">Paste the full MCQ here; choices labeled A), B), C), D) on separate lines move into the option fields automatically. Equations wrapped in $...$, \( ... \), $$...$$, or \[ ... \] display inline and stay editable.</small>
-      </label>
+      </div>
 
       <label class="field"><span>Question format</span>
         <div class="select-wrap"><select id="custom-q-type"><option value="mcq" selected>Multiple choice (4 options)</option><option value="short">Short answer / written response</option></select><span>⌄</span></div>
