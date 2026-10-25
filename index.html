@@ -3,7 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#f6f5f1" />
+  <meta name="theme-color" content="#365c48" />
+  <meta name="description" content="Create polished school exams and JEE or NEET practice papers with PaperCraft." />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/papercraft-192.png" />
+  <link rel="apple-touch-icon" href="icons/papercraft-192.png" />
   <title>PaperCraft — Exam paper studio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -244,5 +248,10 @@ Draw neat diagrams wherever necessary.</textarea></label><button type="button" i
   <script src="data/supabase-config.js"></script>
   <script src="data/question-bank.js"></script>
   <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js').catch(error => console.warn('PaperCraft offline support could not start.', error)));
+    }
+  </script>
 </body>
 </html>

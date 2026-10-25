@@ -1,0 +1,32 @@
+{
+  "id": "/",
+  "name": "PaperCraft — Exam Paper Studio",
+  "short_name": "PaperCraft",
+  "description": "Create polished school exams and JEE or NEET practice papers.",
+  "start_url": "/#home",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f6f5f1",
+  "theme_color": "#365c48",
+  "icons": [
+    {
+      "src": "/icons/papercraft-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/papercraft-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/papercraft-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
