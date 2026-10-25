@@ -464,22 +464,6 @@ function moveQuestion(id, direction) {
   selected.clear(); order.forEach(questionId => selected.add(questionId)); render();
 }
 
-function updateSelectionTray() {
-  const chosen = [...selected].map(id => questions.find(q => q.id === id)).filter(Boolean);
-  const counts = { Easy: 0, Medium: 0, Hard: 0 };
-  let totalMarks = 0;
-  chosen.forEach(q => {
-    if (counts[q.level] !== undefined) counts[q.level] += 1;
-    totalMarks += selectedMarks.get(q.id) || Number.parseInt(q.marks, 10) || 0;
-  });
-  const count = document.querySelector('#tray-count');
-  if (!count) return;
-  count.textContent = `${chosen.length} selected`;
-  document.querySelector('#tray-split').textContent = `Easy ${counts.Easy} · Medium ${counts.Medium} · Hard ${counts.Hard}`;
-  document.querySelector('#tray-marks').textContent = `${totalMarks} marks`;
-  document.querySelector('#selection-tray').classList.toggle('has-selection', chosen.length > 0);
-}
-
 function render() {
   const route = location.hash.slice(1);
   const bankIsVisible = mode === 'coaching' && (route === 'bank' || (route === 'coaching' && activeWorkflowTab === 'questions'));
@@ -516,7 +500,6 @@ function render() {
   list.innerHTML = visible.length ? visible.map((q, i) => `<article class="question-row"><span class="q-number">${String(i + 1).padStart(2, '0')}</span><div class="question-row-copy"><div class="q-title">${escapeHTML(q.name)} <span class="question-chapter">${escapeHTML(q.chapter)}</span></div><div class="question-list-prompt">${q.questionHtml || escapeHTML(q.text)}</div><div class="question-list-full hidden"><div class="question-list-full-prompt">${q.questionHtml || escapeHTML(q.text)}</div>${(q.imageUrls || []).map(url => `<img src="${escapeHTML(url)}" alt="Question illustration" loading="lazy"/>`).join('')}<div class="question-list-full-options">${(q.options || []).map(option => `<div><b>${escapeHTML(option.label)}.</b> ${option.html || escapeHTML(option.text)}</div>`).join('')}</div></div><div class="q-meta"><span class="tag ${String(q.level || 'Medium').toLowerCase()}" title="${q.difficultyMissing ? 'Difficulty was missing from the import; provisionally set to Medium. Review recommended.' : q.difficultyEstimated ? 'Estimated difficulty; review recommended' : 'Difficulty from source'}">${escapeHTML(q.level || 'Medium')}</span><span class="source-tag">${escapeHTML(q.paper || '')}${q.year && q.year !== 'Demo' ? ` · ${escapeHTML(q.year)}` : ''}</span><span>${escapeHTML(q.type || '')}</span><span>${escapeHTML(q.marks || '')}</span></div></div><div class="question-row-actions"><button class="view-bank-question" data-view-question-id="${escapeHTML(q.id)}" aria-expanded="false">View</button><button class="edit-bank-question" data-edit-question-id="${escapeHTML(q.id)}">Edit</button><button class="add-button ${selected.has(q.id) ? 'added' : ''}" data-id="${escapeHTML(q.id)}" aria-label="${selected.has(q.id) ? 'Remove' : 'Add'} question">${selected.has(q.id) ? '✓' : '+'}</button><button class="delete-bank-question" data-delete-question-id="${escapeHTML(q.id)}" aria-label="Delete ${escapeHTML(q.name)} from question bank" title="Remove from this browser’s question bank">−</button></div></article>`).join('') : '<div class="empty-state"><strong>No questions in this chapter yet.</strong><span>Try another chapter or clear the filters.</span></div>';
   document.querySelector('#selected-count').textContent = selected.size;
   document.querySelector('#showing-count').textContent = `Showing ${visible.length} of ${matching.length} questions`;
-  updateSelectionTray();
   updateDifficultyCounts();
   renderCoachingPreview();
   list.querySelectorAll('.add-button').forEach(button => button.addEventListener('click', () => { const id = button.dataset.id; selected.has(id) ? selected.delete(id) : selected.add(id); render(); saveCurrentPaper(); toast(selected.has(id) ? 'Question added to your paper.' : 'Question removed from your paper.'); }));
@@ -711,7 +694,6 @@ updateCoachingHeader();
 let toastTimer;
 function toast(message) { const el = document.querySelector('#toast'); el.textContent = message; el.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('show'), 2400); }
 document.querySelector('#continue-button').addEventListener('click', () => setCoachingTab('preview'));
-document.querySelector('#review-paper').addEventListener('click', () => setCoachingTab('preview'));
 document.querySelector('#new-paper').addEventListener('click', () => { startNewPaper('coaching'); });
 document.querySelector('#create-paper-from-list').addEventListener('click', () => { startNewPaper('coaching'); });
 const sidebar = document.querySelector('#studio-sidebar');
