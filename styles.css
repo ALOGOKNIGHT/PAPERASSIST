@@ -64,6 +64,24 @@ body{background:#f6f5f1;color:#252923}body:before,body:after{visibility:hidden}b
 
 
 @media(prefers-reduced-motion:reduce){#studio-view *,#studio-view *:before,#studio-view *:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
+.paper-splash{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;overflow:hidden;background:radial-gradient(ellipse at 50% 43%,#52755d 0%,#365c48 48%,#294b39 100%);color:#fff;opacity:1;transition:opacity .24s ease,visibility .24s ease}
+.paper-splash.is-leaving{opacity:0;visibility:hidden;pointer-events:none}
+.paper-splash-content{position:relative;display:flex;min-width:210px;flex-direction:column;align-items:center;animation:splash-content-in .95s cubic-bezier(.2,.75,.25,1) both}
+.splash-paper{position:absolute;z-index:0;top:-16px;width:100px;height:130px;padding:34px 15px 15px;border:1px solid rgba(255,255,255,.64);border-radius:9px;background:linear-gradient(145deg,#fffdf6,#ece9dd);box-shadow:0 17px 42px rgba(12,34,20,.27);transform:translate(35px,-9px) rotate(11deg);animation:splash-paper-in .78s .12s cubic-bezier(.2,.8,.2,1) both}
+.splash-paper i{display:block;height:3px;margin:0 0 8px;border-radius:5px;background:#dce1d8;transform:scaleX(0);transform-origin:left;animation:splash-paper-line .36s .48s ease-out forwards}
+.splash-paper i:nth-child(2){width:78%;animation-delay:.57s}.splash-paper i:nth-child(3){width:88%;animation-delay:.66s}
+.splash-brand-mark{position:relative;z-index:1;display:grid;width:62px;height:62px;place-items:center;border:1px solid rgba(255,255,255,.56);border-radius:19px;background:#edcf9b;box-shadow:0 9px 28px rgba(14,33,20,.22);color:#304b39;font:800 34px Manrope,sans-serif;animation:splash-mark-in .62s .14s cubic-bezier(.2,.9,.25,1.35) both}
+.splash-wordmark{margin-top:25px;font:800 24px Manrope,sans-serif;letter-spacing:-1.2px;opacity:0;animation:splash-word-in .42s .38s ease-out forwards}.splash-wordmark span{color:#edcf9b}
+.splash-caption{margin-top:5px;color:rgba(255,255,255,.68);font-size:10px;letter-spacing:1.1px;opacity:0;animation:splash-word-in .4s .5s ease-out forwards}
+.splash-progress{width:110px;height:2px;margin-top:24px;overflow:hidden;border-radius:5px;background:rgba(255,255,255,.18);opacity:0;animation:splash-word-in .3s .48s ease-out forwards}
+.splash-progress i{display:block;width:100%;height:100%;background:#edcf9b;transform:scaleX(0);transform-origin:left;animation:splash-progress-in .62s .52s ease-in-out forwards}
+@keyframes splash-content-in{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+@keyframes splash-paper-in{from{opacity:0;transform:translate(8px,13px) rotate(0) scale(.82)}to{opacity:1;transform:translate(35px,-9px) rotate(11deg) scale(1)}}
+@keyframes splash-paper-line{to{transform:scaleX(1)}}
+@keyframes splash-mark-in{from{opacity:0;transform:translateY(12px) scale(.68) rotate(-12deg)}to{opacity:1;transform:translateY(0) scale(1) rotate(0)}}
+@keyframes splash-word-in{to{opacity:1}}
+@keyframes splash-progress-in{to{transform:scaleX(1)}}
+@media(prefers-reduced-motion:reduce){.paper-splash-content,.splash-paper,.splash-paper i,.splash-brand-mark,.splash-wordmark,.splash-caption,.splash-progress,.splash-progress i{animation:none!important;opacity:1!important;transform:none!important}.splash-progress i{transform:scaleX(1)!important}.paper-splash{transition-duration:.01ms}}
 .logo-dropzone{padding:13px;border:1px dashed rgba(255,255,255,.42);border-radius:12px;background:rgba(255,255,255,.05);transition:background .2s,border-color .2s}.logo-dropzone small{color:rgba(255,255,255,.62);font-size:9px}.logo-dropzone.dragover{border-color:#f0d5a2;background:rgba(232,212,173,.16)}.school-branding img{display:block;max-width:96px;max-height:64px;object-fit:contain;margin:0 auto 7px}.paper-question.dragging{opacity:.42}.paper-question.drag-target{outline:1px dashed #78927a;outline-offset:3px}.delete-section{padding:2px 7px;color:#ffd0bd}.preview-column.expanded{position:fixed!important;z-index:35;inset:7vh 12vw!important;max-width:none!important;width:auto!important;margin:0!important;overflow:auto;background:rgba(37,67,48,.97)}.preview-column.expanded .paper-preview{max-height:72vh;max-width:650px;min-height:70vh}
 :root{--pc-brown:#8B7155}#studio-view footer{display:none}.confirm-overlay .confirm-card button:focus-visible{outline:3px solid #f0d5a2;outline-offset:3px}
 @media(max-width:700px){.workflow-tab{min-height:42px}.bank-exam,.subject-chip,.chapter-chip,.paper-filter,.view-toggle button,.add-button,.selection-tray button,.paper-actions button{min-height:38px}.question-row{padding:14px 0}.chapter-chip{align-items:center}.saved-paper.compact .paper-card-open{padding:10px}.papers-empty button{min-height:42px}}

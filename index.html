@@ -18,6 +18,34 @@
   <script id="MathLive-script" defer src="https://cdn.jsdelivr.net/npm/mathlive@0.111.0"></script>
 </head>
 <body>
+  <div class="paper-splash" id="paper-splash" aria-label="Opening PaperCraft" role="status">
+    <div class="paper-splash-content">
+      <div class="splash-paper" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="splash-brand-mark">P</div>
+      <div class="splash-wordmark">papercraft<span>.</span></div>
+      <div class="splash-caption">Your paper studio</div>
+      <div class="splash-progress" aria-hidden="true"><i></i></div>
+    </div>
+  </div>
+  <script>
+    (() => {
+      const splash = document.querySelector('#paper-splash');
+      const content = splash?.querySelector('.paper-splash-content');
+      if (!splash || !content) return;
+      let dismissed = false;
+      const dismiss = () => {
+        if (dismissed) return;
+        dismissed = true;
+        splash.classList.add('is-leaving');
+        window.setTimeout(() => splash.remove(), 280);
+      };
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.setTimeout(dismiss, reduceMotion ? 180 : 1500);
+      content.addEventListener('animationend', event => {
+        if (event.animationName === 'splash-content-in') dismiss();
+      }, { once: true });
+    })();
+  </script>
   <main class="home-page" id="home-page">
     <header class="home-nav">
       <a class="brand home-brand" href="#home"><span class="brand-mark">P</span><span>papercraft<span class="brand-dot">.</span></span></a>
