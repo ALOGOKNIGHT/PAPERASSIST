@@ -367,6 +367,23 @@ function ensureQuestionBankLoaded(exam, subject) {
   return Promise.all(requests);
 }
 
+function getQuestionBankKeysForIds(ids) {
+  return [...new Set(ids.map(id => {
+    const parts = String(id).split('|');
+    if (parts.length < 3) return null;
+    const key = `${parts[0]}|${parts[1]}`;
+    return questionBankFiles[key] && !loadedQuestionBanks.has(key) ? key : null;
+  }).filter(Boolean))];
+}
+
+function ensureQuestionBanksForIds(ids) {
+  const keys = getQuestionBankKeysForIds(ids);
+  return Promise.all(keys.map(key => {
+    const separator = key.indexOf('|');
+    return ensureQuestionBankLoaded(key.slice(0, separator), key.slice(separator + 1));
+  }));
+}
+
 function getMatchingQuestions(includeLevel = true) {
   const subject = document.querySelector('#subject-select')?.value || 'Physics';
   const exam = document.querySelector('#exam-select')?.value || 'JEE Main';
@@ -416,10 +433,23 @@ function updateDifficultyCounts() {
   });
 }
 
-function renderCoachingPreview() {
+function renderCoachingPreview(loadMissingBanks = true) {
   const host = document.querySelector('#coaching-preview-questions');
   if (!host) return;
   if (window.MathJax?.typesetClear) window.MathJax.typesetClear([host]);
+  const selectedIds = [...selected];
+  const missingIds = selectedIds.filter(id => !questions.some(question => question.id === id));
+  const missingBankKeys = getQuestionBankKeysForIds(missingIds);
+  if (loadMissingBanks && missingBankKeys.length) {
+    host.innerHTML = `<div class="paper-empty-note">Restoring ${selectedIds.length} saved questions…</div>`;
+    ensureQuestionBanksForIds(missingIds)
+      .then(() => renderCoachingPreview(false))
+      .catch(error => {
+        console.error('Some saved question banks could not be restored.', error);
+        renderCoachingPreview(false);
+      });
+    return;
+  }
   const chosen = [...selected].map(id => questions.find(q => q.id === id)).filter(Boolean);
   const optionLineCount = Number(document.querySelector('#preview-option-lines')?.value || 0);
   host.innerHTML = chosen.length ? chosen.map((q, index) => `
@@ -428,6 +458,7 @@ function renderCoachingPreview() {
       ${q.options.length ? `<div class="paper-options option-rows-${optionLineCount}">${q.options.map(option => `<div class="paper-option"><div><b>${escapeHTML(option.label)}.</b> ${option.html || escapeHTML(option.text)}</div></div>`).join('')}</div>` : ''}
       <div class="paper-question-tools"><button type="button" data-move="up" data-id="${escapeHTML(q.id)}" aria-label="Move question up" ${index === 0 ? 'disabled' : ''}>↑</button><button type="button" data-move="down" data-id="${escapeHTML(q.id)}" aria-label="Move question down" ${index === chosen.length - 1 ? 'disabled' : ''}>↓</button><label>Marks <input data-mark-id="${escapeHTML(q.id)}" type="number" min="1" max="20" value="${selectedMarks.get(q.id) || Number.parseInt(q.marks,10) || 1}"/></label><button type="button" data-remove-id="${escapeHTML(q.id)}" aria-label="Remove question">×</button></div>
     </div>`).join('') : '<div class="paper-empty-note">Add questions from your bank to build this paper.</div>';
+  if (missingIds.length) host.insertAdjacentHTML('beforeend', `<div class="paper-empty-note">${missingIds.length} saved question${missingIds.length === 1 ? ' is' : 's are'} not available in the loaded question banks. Check your connection, then reopen this paper.</div>`);
   typesetQuestionMath(host);
   host.querySelectorAll('[data-remove-id]').forEach(button => button.addEventListener('click', () => { selected.delete(button.dataset.removeId); render(); toast('Question removed from your paper.'); }));
   host.querySelectorAll('[data-move]').forEach(button => button.addEventListener('click', () => moveQuestion(button.dataset.id, button.dataset.move)));
@@ -880,7 +911,21 @@ function bindPaperActions(host) {
       document.querySelector('#paper-preview').classList.toggle('school-preview', mode === 'school');
       document.querySelector('#coaching-preview-content').classList.toggle('hidden', mode === 'school');
       document.querySelector('#school-preview-content').classList.toggle('hidden', mode !== 'school');
-      location.hash = mode; navigateView(); if(mode==='school')renderSchoolPreview();else{updateCoachingHeader();render();} setTimeout(() => window.print(), 100);
+      location.hash = mode;
+      navigateView();
+      if (mode === 'school') {
+        renderSchoolPreview();
+        setTimeout(() => window.print(), 100);
+      } else {
+        updateCoachingHeader();
+        ensureQuestionBanksForIds([...selected]).then(() => {
+          render();
+          setTimeout(() => window.print(), 100);
+        }).catch(error => {
+          console.error('Could not load every saved question for printing.', error);
+          toast('Some saved questions could not be loaded. Check your connection and try again.');
+        });
+      }
     } else if (action === 'delete') {
       pendingDeleteId = paper.id; document.querySelector('#delete-confirm').classList.remove('hidden'); document.querySelector('#confirm-delete').focus();
     }
