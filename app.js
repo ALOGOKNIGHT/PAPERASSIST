@@ -617,6 +617,9 @@ function applyCoachingPreviewSettings(persist = true) {
   const sectionSpacing = document.querySelector('#preview-section-spacing').value;
   const questionSpacing = document.querySelector('#preview-question-spacing').value;
   const numberWidth = document.querySelector('#preview-number-width').value;
+  const watermarkSize = Number(document.querySelector('#preview-watermark-size').value);
+  const watermarkRotation = Number(document.querySelector('#preview-watermark-rotation').value);
+  const watermarkTransparency = Number(document.querySelector('#preview-watermark-transparency').value);
   document.querySelector('#paper-font').value = font;
   content.style.fontFamily = font;
   paper.style.setProperty('--paper-question-font', `${questionFontSize}pt`);
@@ -628,16 +631,25 @@ function applyCoachingPreviewSettings(persist = true) {
   paper.style.setProperty('--paper-section-spacing', `${sectionSpacing}px`);
   paper.style.setProperty('--paper-question-spacing', `${questionSpacing}px`);
   paper.style.setProperty('--paper-number-width', `${numberWidth}px`);
+  paper.style.setProperty('--watermark-size', `${watermarkSize}%`);
+  paper.style.setProperty('--watermark-rotation', `${watermarkRotation}deg`);
+  paper.style.setProperty('--watermark-opacity', `${(100 - watermarkTransparency) / 100}`);
   document.querySelector('#preview-section-spacing-output').value = `${sectionSpacing} px`;
   document.querySelector('#preview-question-spacing-output').value = `${questionSpacing} px`;
   document.querySelector('#preview-number-width-output').value = `${numberWidth} px`;
   document.querySelector('#preview-question-font-output').value = `${questionFontSize} pt`;
   document.querySelector('#preview-option-font-output').value = `${optionFontSize} pt`;
+  document.querySelector('#preview-watermark-size-output').value = `${watermarkSize}%`;
+  document.querySelector('#preview-watermark-rotation-output').value = `${watermarkRotation}°`;
+  document.querySelector('#preview-watermark-transparency-output').value = `${watermarkTransparency}%`;
   document.querySelector('#preview-section-spacing-output').textContent = `${sectionSpacing} px`;
   document.querySelector('#preview-question-spacing-output').textContent = `${questionSpacing} px`;
   document.querySelector('#preview-number-width-output').textContent = `${numberWidth} px`;
   document.querySelector('#preview-question-font-output').textContent = `${questionFontSize} pt`;
   document.querySelector('#preview-option-font-output').textContent = `${optionFontSize} pt`;
+  document.querySelector('#preview-watermark-size-output').textContent = `${watermarkSize}%`;
+  document.querySelector('#preview-watermark-rotation-output').textContent = `${watermarkRotation}°`;
+  document.querySelector('#preview-watermark-transparency-output').textContent = `${watermarkTransparency}%`;
   content.dataset.optionLines = document.querySelector('#preview-option-lines').value;
   renderCoachingPreview();
   if (persist && mode === 'coaching') saveCurrentPaper();
@@ -654,7 +666,7 @@ document.querySelector('#paper-font').addEventListener('change', () => {
 document.querySelector('#preview-paper-font').addEventListener('change', () => applyCoachingPreviewSettings());
 document.querySelector('#preview-page-border').addEventListener('change', () => applyCoachingPreviewSettings());
 document.querySelector('#preview-option-lines').addEventListener('change', () => applyCoachingPreviewSettings());
-['#preview-question-font-size', '#preview-option-font-size', '#preview-section-spacing', '#preview-question-spacing', '#preview-number-width'].forEach(selector => {
+['#preview-question-font-size', '#preview-option-font-size', '#preview-section-spacing', '#preview-question-spacing', '#preview-number-width', '#preview-watermark-size', '#preview-watermark-rotation', '#preview-watermark-transparency'].forEach(selector => {
   const control = document.querySelector(selector);
   control.addEventListener('input', () => applyCoachingPreviewSettings(false));
   control.addEventListener('change', () => applyCoachingPreviewSettings());
@@ -670,6 +682,8 @@ function showLogoFile(file) {
   if (currentLogoUrl) URL.revokeObjectURL(currentLogoUrl);
   currentLogoUrl = URL.createObjectURL(file);
   ['#preview-logo','#school-preview-logo'].forEach(selector => { const img=document.querySelector(selector); if(img){img.src=currentLogoUrl;img.classList.remove('hidden');} });
+  const watermark = document.querySelector('#paper-watermark-image');
+  if (watermark) { watermark.src = currentLogoUrl; watermark.classList.remove('hidden'); }
   document.querySelector('#logo-placeholder').classList.add('hidden');
   document.querySelector('#preview-school').classList.add('hidden');
   toast('Logo added to the live preview.');
