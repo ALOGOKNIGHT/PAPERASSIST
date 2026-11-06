@@ -129,11 +129,12 @@ function navigateView() {
   const bank = document.querySelector('#bank');
   const isDashboard = route === 'studio';
   const isPapers = route === 'drafts';
-  const isWorkflow = ['bank', 'coaching', 'school'].includes(route);
+  const isBank = route === 'bank';
+  const isWorkflow = ['coaching', 'school'].includes(route);
   if (route === 'school') mode = 'school';
-  if (route === 'coaching' || route === 'bank') mode = 'coaching';
+  if (route === 'coaching' || isBank) mode = 'coaching';
   document.querySelector('#coaching-preview-controls')?.classList.toggle('hidden', mode !== 'coaching');
-  if (route === 'bank') activeWorkflowTab = 'questions';
+  builder?.classList.toggle('bank-page-active', isBank);
   if (isDashboard) {
     document.querySelectorAll('.mode-card').forEach(card => { card.classList.remove('selected'); card.setAttribute('aria-pressed', 'false'); });
     dashboard?.classList.remove('hidden'); papers?.classList.add('hidden'); builder?.classList.add('hidden'); bank?.classList.add('hidden');
@@ -141,6 +142,20 @@ function navigateView() {
   } else if (isPapers) {
     dashboard?.classList.add('hidden'); papers?.classList.remove('hidden'); builder?.classList.add('hidden'); bank?.classList.add('hidden');
     workflowHeader?.classList.add('hidden'); coachingTabs?.classList.add('hidden'); schoolTabs?.classList.add('hidden');
+  } else if (isBank) {
+    document.querySelectorAll('.mode-card').forEach(card => { card.classList.remove('selected'); card.setAttribute('aria-pressed', 'false'); });
+    dashboard?.classList.add('hidden'); papers?.classList.add('hidden'); builder?.classList.remove('hidden'); bank?.classList.remove('hidden');
+    workflowHeader?.classList.add('hidden'); coachingTabs?.classList.add('hidden'); schoolTabs?.classList.add('hidden');
+    document.querySelector('.setup-layout')?.classList.add('hidden');
+    document.querySelector('#bank')?.classList.remove('school-disabled');
+    document.querySelector('#bank-browser-panel')?.classList.remove('hidden');
+    document.querySelector('#manual-question-editor')?.classList.add('hidden');
+    document.querySelector('#bank-heading').textContent = 'Browse question bank';
+    document.querySelector('#bank-description').textContent = 'Choose questions here, then add them to your active paper with +.';
+    document.querySelector('#bank-kicker').textContent = 'QUESTION BANK';
+    document.querySelector('.question-source-panel')?.classList.remove('bank-source-active');
+    document.querySelector('.question-source-panel h3').textContent = 'Browse questions';
+    document.querySelector('.question-source-panel>p').textContent = 'Filter the JEE and NEET banks by exam and subject.';
   } else if (isWorkflow) {
     dashboard?.classList.add('hidden'); papers?.classList.add('hidden'); builder?.classList.remove('hidden');
     workflowHeader?.classList.remove('hidden');
@@ -172,19 +187,29 @@ function navigateView() {
     document.querySelector('#workflow-kicker').textContent = mode === 'school' ? 'SCHOOL EXAMINATION' : 'COACHING INSTITUTE';
     document.querySelector('#workflow-title').textContent = mode === 'school' ? 'Build your school paper' : 'Build your coaching paper';
     document.querySelector('#bank-heading').textContent = activeWorkflowTab === 'questions' ? 'Add questions' : 'Pick your questions';
+    document.querySelector('#bank-description').textContent = 'Write a question or import a page from PDF or image.';
+    document.querySelector('#bank-kicker').textContent = 'ADD TO PAPER';
+    document.querySelector('#bank-browser-panel')?.classList.add('hidden');
     document.querySelector('#builder-title')?.replaceChildren(document.createTextNode(mode === 'school' ? 'School paper' : 'Coaching paper'));
     document.querySelector('#bank')?.classList.toggle('school-disabled', mode === 'school');
     document.querySelector('#school-settings')?.querySelector('.school-details-group')?.classList.toggle('hidden', mode === 'school' && activeSchoolStep !== 'details');
     document.querySelector('#school-settings')?.querySelector('.school-section-step')?.classList.toggle('hidden', mode === 'school' && activeSchoolStep !== 'sections');
     document.querySelector('.nav-item[href="#bank"]')?.classList.toggle('hidden', mode === 'school');
+    document.querySelector('.question-source-panel')?.classList.toggle('bank-source-active', mode === 'coaching');
+    if (mode === 'coaching') {
+      document.querySelector('.question-source-panel h3').textContent = 'Add questions';
+      document.querySelector('.question-source-panel>p').textContent = 'Write a question or import a PDF or image.';
+    }
     document.querySelector('.setup-layout')?.classList.toggle('preview-only', mode === 'school' ? activeSchoolStep === 'preview' : activeWorkflowTab === 'preview');
   }
   document.querySelector('.nav-item[href="#studio"]')?.classList.toggle('active', isDashboard);
   document.querySelector('.nav-item[href="#bank"]')?.classList.toggle('active', route === 'bank' || (route === 'coaching' && activeWorkflowTab === 'questions'));
-  document.querySelector('.nav-item[href="#bank"]')?.classList.toggle('hidden', !isWorkflow || mode !== 'coaching');
+  document.querySelector('.nav-item[href="#bank"]')?.classList.toggle('hidden', (!isBank && !isWorkflow) || mode !== 'coaching');
+  document.querySelector('.question-bank-nav-link')?.classList.toggle('hidden', mode !== 'coaching');
+  document.querySelector('.question-bank-nav-link')?.classList.toggle('active', isBank);
   document.querySelector('.nav-item[href="#drafts"]')?.classList.toggle('active', isPapers);
-  document.querySelector('.breadcrumb strong').textContent = isPapers ? 'My papers' : isDashboard ? 'Paper studio' : route === 'bank' || activeWorkflowTab === 'questions' ? 'Add questions' : 'Paper studio';
-  if (route === 'bank' || (route === 'coaching' && activeWorkflowTab === 'questions')) render();
+  document.querySelector('.breadcrumb strong').textContent = isPapers ? 'My papers' : isDashboard ? 'Paper studio' : isBank ? 'Question bank' : isWorkflow && mode === 'coaching' && activeWorkflowTab === 'questions' ? 'Add questions' : 'Paper studio';
+  if (isBank || (route === 'coaching' && activeWorkflowTab === 'questions')) render();
   window.scrollTo(0, 0);
 }
 window.addEventListener('hashchange', navigateView);
@@ -412,10 +437,14 @@ function renderBankNavigation() {
     const customSubject = document.querySelector('#custom-q-subject');
     if (customSubject && [...customSubject.options].some(option => option.value === button.dataset.subject)) customSubject.value = button.dataset.subject;
     activeChapter = 'All chapters';
+    document.querySelector('#chapter-search').value = '';
     render();
   }));
-  const matching = questions.filter(q => q.exam === exam && !deletedQuestionIds.includes(q.id) && (subject === 'Full syllabus' || q.subject === subject));
-  const chapters = [...new Set(matching.map(q => q.chapter))].sort((a,b) => a.localeCompare(b));
+  const bankQuestions = questions.filter(q => q.exam === exam && (subject === 'Full syllabus' || q.subject === subject));
+  const matching = bankQuestions.filter(q => !deletedQuestionIds.includes(q.id));
+  // Retain chapter names even when all of that chapter's questions were
+  // hidden from this browser's bank view.
+  const chapters = [...new Set(bankQuestions.map(q => q.chapter).filter(Boolean))].sort((a,b) => a.localeCompare(b));
   const search = (document.querySelector('#chapter-search')?.value || '').trim().toLowerCase();
   const visible = chapters.filter(chapter => chapter.toLowerCase().includes(search));
   document.querySelector('#chapter-list').innerHTML = `<button class="chapter-chip ${activeChapter === 'All chapters' ? 'active' : ''}" data-chapter="All chapters"><span>All chapters</span><b>${matching.length}</b></button>` + visible.map(chapter => `<button class="chapter-chip ${activeChapter === chapter ? 'active' : ''}" data-chapter="${escapeHTML(chapter)}"><span>${escapeHTML(chapter)}</span><b>${matching.filter(q => q.chapter === chapter).length}</b></button>`).join('');
@@ -555,7 +584,7 @@ function render() {
   list.querySelectorAll('[data-delete-question-id]').forEach(button => button.addEventListener('click', () => requestDeleteBankQuestion(button.dataset.deleteQuestionId)));
 }
 document.querySelectorAll('.difficulty').forEach(button => button.addEventListener('click', () => { document.querySelector('.difficulty.active')?.classList.remove('active'); button.classList.add('active'); activeLevel = button.dataset.level; render(); }));
-document.querySelector('#subject-select').addEventListener('change', () => { activeChapter = 'All chapters'; render(); updateCoachingHeader(); });
+document.querySelector('#subject-select').addEventListener('change', () => { activeChapter = 'All chapters'; document.querySelector('#chapter-search').value = ''; render(); updateCoachingHeader(); });
 document.querySelector('#type-filter').addEventListener('change', e => { activeType = e.target.value; render(); });
 document.querySelector('#source-filter').addEventListener('change', e => { activeSource = e.target.value; render(); });
 document.querySelector('#chapter-search').addEventListener('input', renderBankNavigation);
@@ -569,6 +598,7 @@ document.querySelectorAll('.bank-exam').forEach(button => button.addEventListene
   const customSubject = document.querySelector('#custom-q-subject');
   if (customSubject && [...customSubject.options].some(option => option.value === (firstSubject || 'Physics'))) customSubject.value = firstSubject || 'Physics';
   activeChapter = 'All chapters'; activeSource = 'All sources'; activeType = 'All types'; activeLevel = 'All';
+  document.querySelector('#chapter-search').value = '';
   if (document.querySelector('#source-filter')) document.querySelector('#source-filter').value='All sources';
   if (document.querySelector('#type-filter')) document.querySelector('#type-filter').value='All types';
   updateCoachingHeader();render();
@@ -940,7 +970,7 @@ function startNewPaper(nextMode, startTab = 'details') {
   document.querySelector('#paper-preview').classList.toggle('school-preview', nextMode === 'school');
   document.querySelector('#coaching-preview-content').classList.toggle('hidden', nextMode === 'school');
   document.querySelector('#school-preview-content').classList.toggle('hidden', nextMode !== 'school');
-  const route = nextMode === 'coaching' && activeWorkflowTab === 'questions' ? 'bank' : nextMode;
+  const route = nextMode;
   location.hash = route; navigateView();
   if (nextMode === 'school') renderSchoolPreview(); else { updateCoachingHeader(); render(); }
   saveCurrentPaper();
@@ -955,9 +985,7 @@ function setCoachingTab(tab,index = ['details','questions','preview'].indexOf(ta
   document.querySelector('#coaching-tabs').dataset.step = index;
   document.querySelectorAll('#coaching-tabs .workflow-tab').forEach((button,i) => { const active = button.dataset.coachingTab === tab; button.classList.toggle('active',active); button.setAttribute('aria-selected',String(active)); });
   document.querySelector('#coaching-tabs').dataset.step = index;
-  if (location.hash !== '#coaching' && location.hash !== '#bank') location.hash = tab === 'questions' ? 'bank' : 'coaching';
-  else if (tab === 'questions' && location.hash !== '#bank') location.hash = 'bank';
-  else if (tab !== 'questions' && location.hash === '#bank') location.hash = 'coaching';
+  if (location.hash !== '#coaching') location.hash = 'coaching';
   navigateView();
 }
 document.querySelectorAll('[data-school-tab]').forEach(button => button.addEventListener('click', () => {
@@ -993,7 +1021,6 @@ const cancelCustomBtn = document.querySelector('#cancel-custom-q');
 const customForm = document.querySelector('#custom-question-form');
 const manualQuestionEditor = document.querySelector('#manual-question-editor');
 const bankBrowserPanel = document.querySelector('#bank-browser-panel');
-const openQuestionBankBtn = document.querySelector('#open-question-bank');
 const customQuestionType = document.querySelector('#custom-q-type');
 const customOptionsGroup = document.querySelector('#custom-options-group');
 const customOptionInputs = ['#custom-opt-a', '#custom-opt-b', '#custom-opt-c', '#custom-opt-d'].map(selector => document.querySelector(selector));
@@ -1283,7 +1310,6 @@ function openCustomQuestionModal() {
   manualQuestionEditor?.classList.remove('hidden');
   bankBrowserPanel?.classList.add('hidden');
   openCustomBtn?.classList.add('active');
-  openQuestionBankBtn?.classList.remove('active');
   const subjectField = document.querySelector('#custom-q-subject');
   const selectedSubject = document.querySelector('#subject-select')?.value;
   if (subjectField && [...subjectField.options].some(option => option.value === selectedSubject)) {
@@ -1353,13 +1379,11 @@ function closeCustomQuestionModal() {
   document.querySelector('#custom-q-eyebrow').textContent = 'MANUAL QUESTION ENTRY';
   document.querySelector('#custom-question-form [type="submit"]').innerHTML = 'Add to paper <span>→</span>';
   manualQuestionEditor?.classList.add('hidden');
-  bankBrowserPanel?.classList.remove('hidden');
+  bankBrowserPanel?.classList.toggle('hidden', location.hash !== '#bank');
   openCustomBtn?.classList.remove('active');
-  openQuestionBankBtn?.classList.add('active');
 }
 
 openCustomBtn?.addEventListener('click', openCustomQuestionModal);
-openQuestionBankBtn?.addEventListener('click', closeCustomQuestionModal);
 closeCustomBtn?.addEventListener('click', closeCustomQuestionModal);
 cancelCustomBtn?.addEventListener('click', closeCustomQuestionModal);
 customModal?.addEventListener('click', event => {

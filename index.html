@@ -79,7 +79,7 @@
     <button class="sidebar-backdrop hidden" id="sidebar-backdrop" type="button" aria-label="Close navigation"></button>
 
     <main class="main-content" id="studio">
-      <header class="topbar"><button class="mobile-menu" type="button" aria-label="Open navigation" aria-controls="studio-sidebar" aria-expanded="false"><span></span><span></span><span></span></button><div class="breadcrumb"><span class="breadcrumb-parent">Workspace</span><span class="breadcrumb-separator">/</span><strong>Paper studio</strong></div><div class="top-actions"><button class="icon-button" aria-label="Notifications">♧<i></i></button><div class="avatar small">AK</div></div></header>
+      <header class="topbar"><button class="mobile-menu" type="button" aria-label="Open navigation" aria-controls="studio-sidebar" aria-expanded="false"><span></span><span></span><span></span></button><div class="breadcrumb"><span class="breadcrumb-parent">Workspace</span><span class="breadcrumb-separator">/</span><strong>Paper studio</strong></div><a class="question-bank-nav-link" href="#bank"><span aria-hidden="true">▤</span> Question bank</a><div class="top-actions"><button class="icon-button" aria-label="Notifications">♧<i></i></button><div class="avatar small">AK</div></div></header>
       <div class="dashboard-home" id="dashboard-home"><section class="page-heading"><div><div class="eyebrow"><span class="eyebrow-line"></span>YOUR EXAM, YOUR WAY</div><h1>Let’s build a paper<span>.</span></h1><p>Choose a format to get started. You can fine-tune every detail along the way.</p></div><button class="text-button" id="new-paper">＋ <span>New paper</span></button></section>
 
       <section class="mode-grid" aria-label="Choose paper type">
@@ -146,7 +146,6 @@ Draw neat diagrams wherever necessary.</textarea></label><button type="button" i
               <div class="source-panel-kicker">QUESTION SOURCE</div>
               <h3>Choose questions</h3>
               <p>Select from the exam bank or write your own question.</p>
-              <button type="button" class="source-choice" id="open-question-bank"><span class="source-choice-icon">▤</span><span><strong>Question bank</strong><small>Browse JEE and NEET PYQs</small></span></button>
               <div class="source-panel-label source-exam-label">EXAM</div>
               <div class="bank-exam-toggle" role="group" aria-label="Select exam"><button class="bank-exam active" data-exam-family="JEE">JEE</button><button class="bank-exam" data-exam-family="NEET">NEET</button></div>
               <div class="source-panel-label source-subject-label">SUBJECT</div>
@@ -160,7 +159,7 @@ Draw neat diagrams wherever necessary.</textarea></label><button type="button" i
           <div class="bank-breadcrumb" id="bank-breadcrumb"><span>JEE</span><b>›</b><span>Physics</span><b>›</b><strong>All chapters</strong></div>
           <div class="bank-browser"><aside class="chapter-browser"><label class="chapter-search"><span>⌕</span><input id="chapter-search" type="search" placeholder="Find a chapter" aria-label="Search chapters"/></label><div class="chapter-list" id="chapter-list"></div></aside>
           <div class="bank-questions">
-          <div class="question-heading"><div><div class="section-kicker">BUILD YOUR PAPER</div><h2 id="bank-heading">Add questions</h2><p id="bank-description">Choose a chapter, then add questions with the + button.</p></div><div class="heading-actions" style="display:flex;align-items:center;gap:12px;"><div class="selected-total"><strong id="selected-count">0</strong><span>questions selected</span></div></div></div>
+          <div class="question-heading"><div><div class="section-kicker" id="bank-kicker">QUESTION BANK</div><h2 id="bank-heading">Browse question bank</h2><p id="bank-description">Choose questions here, then add them to your active paper with +.</p></div><div class="heading-actions" style="display:flex;align-items:center;gap:12px;"><div class="selected-total"><strong id="selected-count">0</strong><span>questions selected</span></div></div></div>
           <div class="filters"><div class="difficulty-tabs" role="group" aria-label="Filter by difficulty"><button class="difficulty active" data-level="All">All <span>0</span></button><button class="difficulty" data-level="Easy">Easy <span>0</span></button><button class="difficulty" data-level="Medium">Medium <span>0</span></button><button class="difficulty" data-level="Hard">Hard <span>0</span></button></div><button class="filter-button">☷ <span>More filters</span></button></div>
           <div class="more-filters-panel hidden" id="more-filters-panel"><label class="field"><span>Question type</span><div class="select-wrap"><select id="type-filter"><option>All types</option></select><span>⌄</span></div></label><label class="field"><span>Source / year</span><div class="select-wrap"><select id="source-filter"><option>All sources</option></select><span>⌄</span></div></label></div>
           <div class="question-list" id="question-list" aria-live="polite"></div>
