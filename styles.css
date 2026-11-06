@@ -282,3 +282,115 @@ body.sidebar-open{overflow:hidden}
 body:has(#home-page:not(.hidden)){background:#1f3428}
 #studio-view{background:linear-gradient(125deg,#20392b 0%,#344a37 48%,#554736 100%)}
 #studio-view:before{background:radial-gradient(ellipse at 70% 12%,rgba(188,203,166,.22),transparent 38%),radial-gradient(ellipse at 96% 76%,rgba(210,143,103,.14),transparent 28%),radial-gradient(ellipse at 26% 95%,rgba(221,199,160,.11),transparent 35%)}
+
+/* Add questions: fewer columns, larger reading text, and clear touch targets. */
+#bank .question-source-layout{grid-template-columns:minmax(210px,230px) minmax(0,1fr);gap:20px}
+#bank .question-source-panel{gap:12px;padding:18px}
+#bank .source-panel-kicker,#bank .source-panel-label{font-size:10px}
+#bank .question-source-panel h3{font-size:23px}
+#bank .question-source-panel>p{font-size:12px;line-height:1.55}
+#bank .source-choice{min-height:54px;padding:11px}
+#bank .source-choice strong,#bank .manual-source-button strong{font-size:12px}
+#bank .source-choice small,#bank .manual-source-button small{font-size:10px}
+#bank .question-source-panel .bank-exam{min-height:42px;padding:0 16px;font-size:12px}
+#bank .question-source-panel .subject-chip{min-height:42px;padding:9px 11px;font-size:12px}
+#bank .import-source-button,#bank .manual-source-button{min-height:54px;padding:11px}
+#bank .question-bank-view .bank-browser{display:block}
+#bank .question-bank-view .chapter-browser{position:relative;top:auto;display:grid;grid-template-columns:minmax(190px,.34fr) minmax(0,1fr);align-items:center;gap:12px;margin:10px 0 14px;padding:12px;border:1px solid rgba(255,255,255,.23);border-radius:15px;background:rgba(255,255,255,.07)}
+#bank .chapter-search{min-height:46px}
+#bank .chapter-search input{font-size:13px}
+#bank .chapter-list{display:flex;gap:8px;max-height:none;overflow-x:auto;padding:2px 2px 5px;scrollbar-width:thin}
+#bank .chapter-chip{flex:0 0 auto;min-height:42px;padding:0 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.84);font-size:12px}
+#bank .chapter-chip b{font-size:10px}
+#bank .chapter-chip.active{border-color:#f0d5a2;background:#e8d4ad;color:#304638}
+#bank .bank-questions{min-width:0;padding:18px;border:1px solid rgba(255,255,255,.24);border-radius:20px;background:rgba(255,255,255,.08)}
+#bank .question-heading{align-items:center;gap:16px}
+#bank .question-heading h2{font-size:29px}
+#bank .question-heading p{font-size:13px;line-height:1.5}
+#bank .selected-total strong{font-size:25px;color:#f0d5a2}
+#bank .selected-total span{font-size:11px}
+#bank .filters{gap:12px;flex-wrap:wrap;margin-top:19px}
+#bank .difficulty-tabs{gap:5px;padding:5px;border-radius:999px;background:rgba(12,32,20,.45)}
+#bank .difficulty{min-height:42px;padding:0 15px;border-radius:999px;color:rgba(255,255,255,.8);font-size:12px}
+#bank .difficulty.active{background:#e8d4ad;color:#304638}
+#bank .difficulty span{font-size:11px;opacity:1}
+#bank .filter-button{min-height:42px;padding:0 14px;border-color:rgba(255,255,255,.3);border-radius:999px;background:rgba(255,255,255,.08);color:#fff;font-size:12px}
+#bank .more-filters-panel{gap:12px;padding:12px 0}
+#bank .more-filters-panel .field{font-size:12px}
+#bank .more-filters-panel select{min-height:44px;font-size:13px}
+#bank .question-list{display:grid;gap:11px;margin-top:17px;border:0}
+#bank .question-row{grid-template-columns:42px minmax(0,1fr);align-items:start;gap:0 13px;min-height:0;padding:17px;border:1px solid rgba(255,255,255,.21);border-radius:15px;background:rgba(17,43,28,.3)}
+#bank .q-number{width:38px;height:38px;border-radius:11px;background:rgba(232,212,173,.19);color:#f0d5a2;font-size:12px;font-weight:700}
+#bank .question-row-copy{min-width:0}
+#bank .q-title{font-size:14px;line-height:1.4;color:#fff}
+#bank .question-chapter{display:block;margin-top:3px;color:rgba(255,255,255,.58);font-size:11px}
+#bank .question-list-prompt{max-height:none;overflow:visible;margin-top:9px;color:rgba(255,255,255,.95);font-size:15px;line-height:1.65;overflow-wrap:anywhere}
+#bank .question-list-prompt p{margin:0 0 5px}
+#bank .q-meta{flex-wrap:wrap;gap:7px 11px;margin-top:10px}
+#bank .q-meta span{font-size:11px;color:rgba(255,255,255,.7)}
+#bank .q-meta .tag{font-size:10px!important}
+#bank .question-row-actions{grid-column:2;display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:13px}
+#bank .question-row-actions .view-bank-question,#bank .question-row-actions .edit-bank-question,#bank .question-row-actions .delete-bank-question{width:auto;min-height:42px;padding:0 13px;border:1px solid rgba(255,255,255,.28);border-radius:11px;background:rgba(255,255,255,.08);color:#fff;font:600 12px var(--pc-grotesk);cursor:pointer}
+#bank .question-row-actions .add-button{width:auto;min-width:142px;min-height:44px;padding:0 17px;border:1px solid #e8d4ad;border-radius:11px;background:#e8d4ad;color:#304638;font:700 12px var(--pc-grotesk)}
+#bank .question-row-actions .add-button.added{border-color:rgba(169,202,158,.65);background:rgba(169,202,158,.2);color:#e6f3dd}
+#bank .question-row-actions .delete-bank-question{border-color:rgba(255,186,162,.38);color:#ffd8c8}
+#bank .question-row-actions .view-bank-question[aria-expanded="true"]{border-color:#e8d4ad;color:#f1d5a2}
+#bank .question-list-full{margin-top:13px;padding:14px;border-radius:12px;font-size:14px;line-height:1.7}
+#bank .question-list-full-options{gap:8px 12px;margin-top:12px}
+#bank .question-list-full-options>div{min-width:0;padding:10px 12px;border:1px solid rgba(255,255,255,.15);border-radius:10px;background:rgba(255,255,255,.06);font-size:14px;line-height:1.55;overflow-wrap:anywhere}
+#bank .builder-footer{gap:10px;align-items:center}
+#bank .builder-footer>span{font-size:12px}
+#bank .builder-footer button{min-height:44px;padding:0 17px;font-size:12px}
+#manual-question-editor .custom-q-card .field{font-size:13px;gap:8px}
+#manual-question-editor .custom-q-card .field input,#manual-question-editor .custom-q-card .field select,#manual-question-editor .custom-q-card .field textarea,#manual-question-editor .custom-q-card .custom-options-group input{min-height:46px;font-size:14px}
+#manual-question-editor .math-rich-editor{min-height:58px;padding:12px 14px;font-size:15px;line-height:1.7}
+#manual-question-editor .question-rich-editor{min-height:170px}
+#manual-question-editor .option-rich-editor{min-height:64px;font-size:14px}
+#manual-question-editor .custom-options-group .field small,#manual-question-editor .math-editor-hint{font-size:11px;line-height:1.55}
+#manual-question-editor .question-image-controls .secondary-button,#manual-question-editor .replace-option-button{min-height:42px;padding:0 14px;font-size:11px}
+@media(max-width:1050px){#bank .question-source-layout{grid-template-columns:190px minmax(0,1fr);gap:14px}#bank .question-source-panel{padding:14px}#bank .question-bank-view .chapter-browser{grid-template-columns:minmax(150px,.35fr) minmax(0,1fr);gap:9px;padding:10px}#bank .bank-questions{padding:14px}}
+@media(max-width:700px){
+  #bank .question-source-layout{grid-template-columns:minmax(0,1fr);gap:10px}
+  #bank .question-source-panel{position:relative;top:auto;grid-template-columns:minmax(0,1fr) auto;gap:8px 10px;padding:13px}
+  #bank .source-panel-kicker,#bank .question-source-panel>h3{grid-column:1/-1}
+  #bank .question-source-panel>p{display:none}
+  #bank .source-choice{grid-column:1/-1}
+  #bank .question-source-panel .source-exam-label{grid-column:1;grid-row:auto;align-self:center}
+  #bank .question-source-panel .bank-exam-toggle{grid-column:2;grid-row:auto;justify-self:end}
+  #bank .question-source-panel .source-subject-label{grid-column:1/-1}
+  #bank .question-source-panel .bank-subjects{grid-column:1/-1;display:flex;flex-wrap:nowrap;max-height:none;overflow-x:auto;padding-bottom:3px}
+  #bank .question-source-panel .subject-chip{width:auto;min-height:42px;white-space:nowrap}
+  #bank .source-panel-divider{display:none}
+  #bank .import-source-button,#bank .manual-source-button{grid-column:auto;min-width:0;min-height:56px}
+  #bank .manual-source-button{grid-template-columns:22px minmax(0,1fr)}
+  #bank .question-bank-view .chapter-browser{grid-template-columns:minmax(0,1fr);gap:9px;padding:10px}
+  #bank .chapter-search{width:100%}
+  #bank .chapter-list{display:flex;flex-wrap:nowrap;overflow-x:auto}
+  #bank .bank-questions{padding:13px;border-radius:17px}
+  #bank .question-heading h2{font-size:26px}
+  #bank .question-heading p{font-size:12px}
+  #bank .selected-total strong{font-size:22px}
+  #bank .filters{align-items:stretch}
+  #bank .difficulty-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));width:100%}
+  #bank .difficulty{min-width:0;padding:0 7px;font-size:11px}
+  #bank .difficulty span{display:block;font-size:10px}
+  #bank .filter-button{align-self:flex-start}
+  #bank .question-row{grid-template-columns:34px minmax(0,1fr);gap:0 10px;padding:13px;border-radius:14px}
+  #bank .q-number{width:32px;height:32px;font-size:11px}
+  #bank .q-title{font-size:13px}
+  #bank .question-list-prompt{font-size:15px;line-height:1.7}
+  #bank .q-meta{gap:6px 8px}
+  #bank .q-meta span{font-size:10px}
+  #bank .question-row-actions{gap:6px;margin-top:12px}
+  #bank .question-row-actions .view-bank-question,#bank .question-row-actions .edit-bank-question,#bank .question-row-actions .delete-bank-question{min-height:42px;padding:0 10px;font-size:11px}
+  #bank .question-row-actions .add-button{flex:1 1 140px;min-height:44px;padding:0 12px;font-size:12px}
+  #bank .question-list-full-options{grid-template-columns:minmax(0,1fr)}
+  #bank .question-list-full-options>div{font-size:14px}
+  #bank .builder-footer{display:grid;grid-template-columns:1fr 1fr}
+  #bank .builder-footer>span{grid-column:1/-1}
+  #bank .builder-footer button{width:100%;font-size:11px}
+  #manual-question-editor .custom-q-card{padding:19px 16px}
+  #manual-question-editor .custom-q-card .form-grid.two-col,#manual-question-editor .custom-q-card .custom-options-group .form-grid{grid-template-columns:minmax(0,1fr)}
+  #manual-question-editor .math-rich-editor{font-size:16px}
+  #manual-question-editor .option-rich-editor{min-height:68px}
+}
