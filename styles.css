@@ -277,3 +277,8 @@ body.sidebar-open{overflow:hidden}
   #paper-preview .paper-syllabus{margin:8pt 0 12pt!important;padding:7pt 8pt!important}
   #paper-preview .paper-section-title{max-width:40%!important;margin:14pt auto 10pt!important;padding:4pt 8pt!important}
 }
+
+/* Darken the surrounding app canvas while keeping the printable sheet white. */
+body:has(#home-page:not(.hidden)){background:#1f3428}
+#studio-view{background:linear-gradient(125deg,#20392b 0%,#344a37 48%,#554736 100%)}
+#studio-view:before{background:radial-gradient(ellipse at 70% 12%,rgba(188,203,166,.22),transparent 38%),radial-gradient(ellipse at 96% 76%,rgba(210,143,103,.14),transparent 28%),radial-gradient(ellipse at 26% 95%,rgba(221,199,160,.11),transparent 35%)}
