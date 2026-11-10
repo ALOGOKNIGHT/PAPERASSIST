@@ -339,6 +339,21 @@ function refreshBankFilters() {
   if (questionSources.includes(selectedSource)) sourceFilter.value = selectedSource;
 }
 
+function resetQuestionBankFilters() {
+  activeChapter = 'All chapters';
+  activeSource = 'All sources';
+  activeType = 'All types';
+  activeLevel = 'All';
+  showAll = false;
+  document.querySelector('#chapter-search').value = '';
+  if (typeFilter) typeFilter.value = 'All types';
+  if (sourceFilter) sourceFilter.value = 'All sources';
+  document.querySelector('.difficulty.active')?.classList.remove('active');
+  document.querySelector('.difficulty[data-level="All"]')?.classList.add('active');
+  const loadMore = document.querySelector('#load-more');
+  if (loadMore) loadMore.innerHTML = 'View all questions <span>→</span>';
+}
+
 let svgDefinitionRoot = null;
 const mountedSvgDefinitions = new Set();
 function mountSvgDefinitions(definitions = []) {
@@ -369,9 +384,16 @@ function ensureQuestionBankLoaded(exam, subject) {
     const request = fetch(`data/question-banks/${filename}`)
       .then(async response => {
         if (!response.ok) throw new Error(`Could not load the ${exam} ${name} question bank.`);
-        if (!('DecompressionStream' in window)) throw new Error('This browser does not support compressed question banks.');
-        const stream = new Blob([await response.arrayBuffer()]).stream().pipeThrough(new DecompressionStream('gzip'));
-        return new Response(stream).json();
+        const bytes = await response.arrayBuffer();
+        const signature = new Uint8Array(bytes, 0, Math.min(2, bytes.byteLength));
+        // Some static hosts/browser stacks transparently decompress .gz files.
+        // Only run the gzip stream when the response still has a gzip header.
+        if (signature[0] === 0x1f && signature[1] === 0x8b) {
+          if (!('DecompressionStream' in window)) throw new Error('This browser cannot decompress the question bank.');
+          const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+          return new Response(stream).json();
+        }
+        return JSON.parse(new TextDecoder('utf-8').decode(bytes));
       })
       .then(bank => {
         const existingIds = new Set(questions.map(question => question.id));
@@ -436,8 +458,7 @@ function renderBankNavigation() {
     document.querySelector('#subject-select').value = button.dataset.subject;
     const customSubject = document.querySelector('#custom-q-subject');
     if (customSubject && [...customSubject.options].some(option => option.value === button.dataset.subject)) customSubject.value = button.dataset.subject;
-    activeChapter = 'All chapters';
-    document.querySelector('#chapter-search').value = '';
+    resetQuestionBankFilters();
     render();
   }));
   const bankQuestions = questions.filter(q => q.exam === exam && (subject === 'Full syllabus' || q.subject === subject));
@@ -537,6 +558,15 @@ function render() {
   const exam = document.querySelector('#exam-select')?.value || 'JEE Main';
   const subject = document.querySelector('#subject-select')?.value || 'Physics';
   const bankKey = `${exam}|${subject}`;
+  if (bankIsVisible && exam === 'JEE Advanced') {
+    list.innerHTML = '<div class="empty-state"><strong>The imported JEE bank is for JEE Main.</strong><span>Change Target examination to JEE Main to browse its Physics, Chemistry, and Mathematics questions.</span></div>';
+    document.querySelector('#showing-count').textContent = 'JEE Advanced question bank not imported';
+    document.querySelector('#selected-count').textContent = selected.size;
+    renderBankNavigation();
+    updateDifficultyCounts();
+    renderCoachingPreview();
+    return;
+  }
   if (bankIsVisible && subject !== 'Full syllabus' && questionBankFiles[bankKey] && !loadedQuestionBanks.has(bankKey)) {
     list.innerHTML = '<div class="empty-state"><strong>Loading question bank…</strong><span>Large chapter banks load only when you open them.</span></div>';
     document.querySelector('#showing-count').textContent = 'Loading questions…';
@@ -584,7 +614,7 @@ function render() {
   list.querySelectorAll('[data-delete-question-id]').forEach(button => button.addEventListener('click', () => requestDeleteBankQuestion(button.dataset.deleteQuestionId)));
 }
 document.querySelectorAll('.difficulty').forEach(button => button.addEventListener('click', () => { document.querySelector('.difficulty.active')?.classList.remove('active'); button.classList.add('active'); activeLevel = button.dataset.level; render(); }));
-document.querySelector('#subject-select').addEventListener('change', () => { activeChapter = 'All chapters'; document.querySelector('#chapter-search').value = ''; render(); updateCoachingHeader(); });
+document.querySelector('#subject-select').addEventListener('change', () => { resetQuestionBankFilters(); render(); updateCoachingHeader(); });
 document.querySelector('#type-filter').addEventListener('change', e => { activeType = e.target.value; render(); });
 document.querySelector('#source-filter').addEventListener('change', e => { activeSource = e.target.value; render(); });
 document.querySelector('#chapter-search').addEventListener('input', renderBankNavigation);
@@ -597,10 +627,7 @@ document.querySelectorAll('.bank-exam').forEach(button => button.addEventListene
   if (subjEl) subjEl.value = firstSubject || 'Physics';
   const customSubject = document.querySelector('#custom-q-subject');
   if (customSubject && [...customSubject.options].some(option => option.value === (firstSubject || 'Physics'))) customSubject.value = firstSubject || 'Physics';
-  activeChapter = 'All chapters'; activeSource = 'All sources'; activeType = 'All types'; activeLevel = 'All';
-  document.querySelector('#chapter-search').value = '';
-  if (document.querySelector('#source-filter')) document.querySelector('#source-filter').value='All sources';
-  if (document.querySelector('#type-filter')) document.querySelector('#type-filter').value='All types';
+  resetQuestionBankFilters();
   updateCoachingHeader();render();
 }));
 document.querySelector('.filter-button').addEventListener('click', () => {
@@ -1833,7 +1860,7 @@ document.querySelectorAll('#coaching-settings input:not([type=file]),#coaching-s
   clearTimeout(autosaveTimer); autosaveTimer=setTimeout(saveCurrentPaper,350);
 }));
 window.addEventListener('pagehide', () => { clearTimeout(autosaveTimer); if (window.activePaperId) saveCurrentPaper(); });
-document.querySelector('#exam-select')?.addEventListener('change', () => { activeChapter = 'All chapters';activeSource='All sources';if(document.querySelector('#source-filter'))document.querySelector('#source-filter').value='All sources';render();updateCoachingHeader(); });
+document.querySelector('#exam-select')?.addEventListener('change', () => { resetQuestionBankFilters(); render(); updateCoachingHeader(); });
 window.addEventListener('hashchange', () => { if (location.hash === '#drafts') renderMyPapers(); if (location.hash === '#studio') renderRecentPapers(); });
 renderRecentPapers(); renderMyPapers();
 
